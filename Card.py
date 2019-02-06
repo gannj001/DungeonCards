@@ -1,6 +1,8 @@
 import random
-from PIL import Image, ImageFilter
+
 import numpy as np
+from PIL import Image, ImageFont, ImageDraw
+
 
 class Card(object):
     def __init__(self):
@@ -53,20 +55,24 @@ class Card(object):
     def draw_exits(self):
         if self.south:
             for y in range(int(self.Y_COUNT/2)-1, self.Y_COUNT):
-                for x in [int(self.X_COUNT/2)-1, int(self.X_COUNT/2)]:
+                for x in range(int(self.X_COUNT / 2 - self.corridor_width / 2),
+                               int(self.X_COUNT / 2 + self.corridor_width / 2)):
                     self.grid[y][x] = self.FLOOR_COLOUR
         if self.north:
             for y in range(0, int(self.Y_COUNT/2)+1):
-                for x in [int(self.X_COUNT/2)-1, int(self.X_COUNT/2)]:
+                for x in range(int(self.X_COUNT / 2 - self.corridor_width / 2),
+                               int(self.X_COUNT / 2 + self.corridor_width / 2)):
                     self.grid[y][x] = self.FLOOR_COLOUR
 
         if self.west:
-            for y in [int(self.Y_COUNT/2)-1, int(self.Y_COUNT/2)]:
+            for y in range(int(self.Y_COUNT / 2 - self.corridor_width / 2),
+                           int(self.Y_COUNT / 2 + self.corridor_width / 2)):
                for x in range(0, int(self.X_COUNT / 2)+1):
                     self.grid[y][x] = self.FLOOR_COLOUR
 
         if self.east:
-            for y in [int(self.Y_COUNT/2)-1, int(self.Y_COUNT/2)]:
+            for y in range(int(self.Y_COUNT / 2 - self.corridor_width / 2),
+                           int(self.Y_COUNT / 2 + self.corridor_width / 2)):
                 for x in range(int(self.X_COUNT/2)-1, self.X_COUNT):
                     self.grid[y][x] = self.FLOOR_COLOUR
 
@@ -90,6 +96,12 @@ class Card(object):
                 if y % self.pixel_factor == 0:
                     self.image_array[x][y] = [0, 0, 0]
 
+    def add_name(self, img):
+        draw = ImageDraw.Draw(img)
+        font = ImageFont.truetype("Courier New Bold.ttf", 16)
+        draw.text((0, 0), f"{self.name}\n{self.room_type[:4]}", (255, 255, 255), font)
+        return img
+
     def render_image(self):
         small_img = Image.fromarray(self.grid, 'RGB')
         img = small_img.resize((self.X_COUNT*self.pixel_factor, self.Y_COUNT*self.pixel_factor))
@@ -98,6 +110,7 @@ class Card(object):
         small_img.save("small.png")
         big_img = Image.fromarray(self.image_array, 'RGB')
         big_img = big_img.resize((big_img.width*2, big_img.height*2))
+        big_img = self.add_name(big_img)
         return big_img
 
 
@@ -108,10 +121,6 @@ class Room(Card):
         self.room_height = random.choice([y for y in range(8, 12)])
         self.has_room = True
         self.room_type = "room"
-
-    def build_room(self):
-        super().build_room()
-
 
         
 class Corridor(Card):
@@ -128,17 +137,9 @@ class Corridor(Card):
             self.west = True
             self.east = True
 
-    def build_room(self):
-        super().build_room()
 
-
-class Junction(Corridor):
+class Junction(Card):
     def __init__(self):
         super().__init__()
         self.exit_count = 3
         self.room_type = "junction"
-        self.has_room = random.choice([True, False])
-
-
-
-

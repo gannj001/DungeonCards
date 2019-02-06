@@ -1,9 +1,12 @@
+import os
+
 from Card import *
-import os, shutil
+
 
 def test():
     j = Corridor()
     j.generate_exits()
+    j.name = "X#"
     j.build_room()
     j.print_info()
     img = j.render_image()
@@ -12,6 +15,7 @@ def test():
 
 def main():
     empty_folder()
+    print("Old Files Deleted...")
     alpha = "abcdefghijklmnopqrstuvwxyz"
     num = "123456789"
     object_list = [Corridor(), Room(), Room(), Room(), Room(), Junction(), Junction()]
@@ -31,4 +35,4 @@ def empty_folder():
         os.unlink(file_path)
 
 
-test()
+main()
