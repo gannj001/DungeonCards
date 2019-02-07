@@ -10,7 +10,7 @@ class Card(object):
         self.WALL_COLOUR = [153, 76, 0]
         self.FLOOR_COLOUR = [255, 255, 102]
         self.name = ""
-        self.room_type = "Card"
+        self.room_type = "card"
 
         self.north = False
         self.south = False
@@ -30,6 +30,7 @@ class Card(object):
         self.pixel_factor = 12
         self.image_array = None
         self.has_room = random.choice([True, False])
+        self.has_features = random.choice([True, False])
 
         self.build_default_grid()
 
@@ -80,6 +81,8 @@ class Card(object):
         self.draw_exits()
         if self.has_room:
             self.draw_room()
+        if self.has_features:
+            self.add_features()
 
     def draw_room(self):
         startx = int((self.X_COUNT - self.room_width)/2)
@@ -87,6 +90,9 @@ class Card(object):
         for y in range(starty, starty+self.room_height):
             for x in range(startx, startx+self.room_width):
                 self.grid[y][x] = self.FLOOR_COLOUR
+
+    def add_features(self):
+        pass
 
     def add_grid_lines(self):
         for x in range(len(self.image_array)):
